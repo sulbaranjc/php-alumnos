@@ -1,6 +1,10 @@
 <?php
 require_once 'Alumno.php';
 
+$isEditing = false;
+$alumnoToEdit = null;
+
+
 $filename = "data.json";
 
 // Cargar datos desde el archivo JSON y convertir cada entrada en un objeto Alumno.
@@ -29,10 +33,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ];
             }, $alumnos)));
             break;
+            case 'update':
+                if (isset($_POST['index'])) {
+                    $index = intval($_POST['index']);
+                    $alumno = new Alumno($_POST['nombre'], $_POST['apellido'], $_POST['telefono'], $_POST['email'], $_POST['nota1'], $_POST['nota2'], $_POST['nota3'], $_POST['asistencia'], $_POST['examenFinal']);
+                    $alumnos[$index] = $alumno;
+                    file_put_contents($filename, json_encode(array_map(function(Alumno $alumno) {
+                        return [
+                            'nombre' => $alumno->getNombre(),
+                            'apellido' => $alumno->getApellido(),
+                            // ... (los demás campos)
+                        ];
+                    }, $alumnos)));
+                }
+                break;
 
         // Puedes añadir lógica para modificar y eliminar aquí...
     }
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['index'])) {
+    $isEditing = true;
+    $indexToEdit = intval($_GET['index']);
+    
+    if (isset($alumnos[$indexToEdit])) {
+        $alumnoToEdit = $alumnos[$indexToEdit];
+    }
+}
+
 ?>
 
 <!-- A continuación, puedes continuar con la parte HTML de tu index.php, como el formulario y la tabla de listado de alumnos. -->
@@ -77,69 +105,119 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Formulario -->
 <div class="container mt-4">
-    <h2>Registro de Alumnos</h2>
+    <h2 class="text-center"><?= $isEditing ? 'Editar Alumno' : 'Registro de Alumnos' ?></h2>
     <form action="index.php" method="post" class="mb-4">
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" required>
+
+        <!-- Si estamos editando, incluir un campo oculto con el índice del alumno a editar -->
+        <?php if ($isEditing): ?>
+            <input type="hidden" name="index" value="<?= $indexToEdit ?>">
+        <?php endif; ?>
+
+        <!-- Nombre y Apellido en la misma línea -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    
+                    <input type="text" class="form-control" id="nombre" name="nombre" value="<?= $isEditing ? $alumnoToEdit->getNombre() : '' ?>" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="apellido" class="form-label">Apellido</label>
+                    <input type="text" class="form-control" id="apellido" name="apellido" value="<?= $isEditing ? $alumnoToEdit->getApellido() : '' ?>" required>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="apellido" class="form-label">Apellido</label>
-            <input type="text" class="form-control" id="apellido" name="apellido" required>
+
+        <!-- Teléfono y Email en la misma línea -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="tel" class="form-control" id="telefono" name="telefono" value="<?= $isEditing ? $alumnoToEdit->getTelefono() : '' ?>">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="email" name="email" value="<?= $isEditing ? $alumnoToEdit->getEmail() : '' ?>" required>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="telefono" class="form-label">Teléfono</label>
-            <input type="tel" class="form-control" id="telefono" name="telefono">
+
+        <!-- Notas, asistencia y finales -->
+        <div class="row">
+            <div class="col">
+                <div class="mb-3">
+                    <label for="nota1" class="form-label">Nota 1 (20%)</label>
+                    <input type="number" class="form-control" id="nota1" name="nota1" step="0.1" min="0" max="10" value="<?= $isEditing ? $alumnoToEdit->getNota1() : '' ?>" required>
+                </div>
+            </div>
+            <div class="col">
+                <div class="mb-3">
+                    <label for="nota2" class="form-label">Nota 2 (20%)</label>
+                    <input type="number" class="form-control" id="nota2" name="nota2" step="0.1" min="0" max="10" value="<?= $isEditing ? $alumnoToEdit->getNota2() : '' ?>" required>
+                </div>
+            </div>
+            <div class="col">
+                <div class="mb-3">
+                    <label for="nota3" class="form-label">Nota 3 (20%)</label>
+                    <input type="number" class="form-control" id="nota3" name="nota3" step="0.1" min="0" max="10" value="<?= $isEditing ? $alumnoToEdit->getNota3() : '' ?>" required>
+                </div>
+            </div>
+            <div class="col">
+                <div class="mb-3">
+                    <label for="asistencia" class="form-label">Asistencia (10%)</label>
+                    <input type="number" class="form-control" id="asistencia" name="asistencia" step="0.1" min="0" max="10" value="<?= $isEditing ? $alumnoToEdit->getAsistencia() : '' ?>" required>
+                </div>
+            </div>
+            <div class="col">
+                <div class="mb-3">
+                    <label for="examenFinal" class="form-label">Finales (30%)</label>
+                    <input type="number" class="form-control" id="examenFinal" name="examenFinal" step="0.1" min="0" max="10" value="<?= $isEditing ? $alumnoToEdit->getExamenFinal() : '' ?>" required>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Correo Electrónico</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label for="nota1" class="form-label">Nota 1 (20%)</label>
-            <input type="number" class="form-control" id="nota1" name="nota1" step="0.1" min="0" max="10" required>
-        </div>
-        <div class="mb-3">
-            <label for="nota2" class="form-label">Nota 2 (20%)</label>
-            <input type="number" class="form-control" id="nota2" name="nota2" step="0.1" min="0" max="10" required>
-        </div>
-        <div class="mb-3">
-            <label for="nota3" class="form-label">Nota 3 (20%)</label>
-            <input type="number" class="form-control" id="nota3" name="nota3" step="0.1" min="0" max="10" required>
-        </div>
-        <div class="mb-3">
-            <label for="asistencia" class="form-label">Asistencia (10%)</label>
-            <input type="number" class="form-control" id="asistencia" name="asistencia" step="0.1" min="0" max="10" required>
-        </div>
-        <div class="mb-3">
-            <label for="examenFinal" class="form-label">Examen Final (30%)</label>
-            <input type="number" class="form-control" id="examenFinal" name="examenFinal" step="0.1" min="0" max="10" required>
-        </div>
-        <button type="submit" class="btn btn-primary" name="action" value="add">Agregar</button>
+
+        <button type="submit" class="btn btn-primary" name="action" value="<?= $isEditing ? 'update' : 'add' ?>">
+            <?= $isEditing ? 'Guardar' : 'Agregar' ?>
+        </button>
     </form>
 </div>
 <!-- Tabla de Alumnos -->
-<h3>Listado de Alumnos</h3>
-<table class="table">
+<table class="table container">
+    <h3 class="text-center">Listado de Alumnos</h3>
     <thead>
         <tr>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Nota Acumulada</th>
+            <th>Acciones</th>
             <!-- Otros encabezados de tabla... -->
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($alumnos as $alumno) : ?>
+        <?php foreach ($alumnos as $index => $alumno) : ?>
             <tr>
                 <td><?= $alumno->getNombre() ?></td>
                 <td><?= $alumno->getApellido() ?></td>
                 <td><?= $alumno->getNotaAcumulada() ?></td>
+                <td>
+                    <!-- Enlaces para Editar y Eliminar -->
+                    <a href="index.php?action=edit&index=<?= $index ?>">
+                        <img src="imgs/file-edit-line.png" alt="Editar" width="24px">
+                    </a>
+                    <a href="eliminar.php?index=<?= $index ?>">
+                        <img src="imgs/delete-bin-line.png" alt="Eliminar" width="24px">
+                    </a>
+                </td>
                 <!-- Más celdas... -->
             </tr>
         <?php endforeach; ?>
     </tbody>
 </table>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
