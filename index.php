@@ -42,7 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         return [
                             'nombre' => $alumno->getNombre(),
                             'apellido' => $alumno->getApellido(),
-                            // ... (los demás campos)
+                            'telefono' => $alumno->getTelefono(),
+                            'email' => $alumno->getEmail(),
+                            'nota1' => $alumno->getNota1(),
+                            'nota2' => $alumno->getNota2(),
+                            'nota3' => $alumno->getNota3(),
+                            'asistencia' => $alumno->getAsistencia(),
+                            'examenFinal' => $alumno->getExamenFinal(),
                         ];
                     }, $alumnos)));
                 }
