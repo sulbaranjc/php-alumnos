@@ -199,31 +199,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 <table class="table container">
     <h3 class="text-center">Listado de Alumnos</h3>
     <thead>
-        <tr>
+        <tr class="text-center">
+            <th>Acciones</th>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Nota Acumulada</th>
-            <th>Acciones</th>
+            <th>Comentario</th>
             <!-- Otros encabezados de tabla... -->
         </tr>
     </thead>
     <tbody>
         <?php foreach ($alumnos as $index => $alumno) : ?>
             <tr>
-                <td><?= $alumno->getNombre() ?></td>
-                <td><?= $alumno->getApellido() ?></td>
-                <td><?= $alumno->getNotaAcumulada() ?></td>
-                <td>
-                    <!-- Enlaces para Editar, Eliminar y presentarse-->
-                    <a href="index.php?action=edit&index=<?= $index ?>">
-                        <img src="imgs/file-edit-line.png" alt="Editar" width="24px">
-                    </a>
-                    <a href="eliminar.php?index=<?= $index ?>">
-                        <img src="imgs/delete-bin-line.png" alt="Eliminar" width="24px">
-                    </a>
+            <td>
+                <!-- Enlaces para Editar, Eliminar y presentarse-->
+                <a href="index.php?action=edit&index=<?= $index ?>">
+                    <img src="imgs/file-edit-line.png" alt="Editar" width="24px">
+                </a>
+                <a href="eliminar.php?index=<?= $index ?>">
+                    <img src="imgs/delete-bin-line.png" alt="Eliminar" width="24px">
+                </a>
+            </td>
+            <td><?= $alumno->getNombre() ?></td>
+            <td><?= $alumno->getApellido() ?></td>
+            <td class="text-center"><?= $alumno->getNotaAcumulada() ?></td>
+            <td>
                     <?= $alumno->calificar("te informo que he ",$alumno->getNotaAcumulada())?>
                     <a href="#" class="enlace-formal" data-bs-toggle="modal" data-bs-target="#acercaDeModa2"><img src="imgs/mensaje.png" alt="presentarse" title="" /></a>
-                </td>
+            </td>
                 <!-- Más celdas... -->
             </tr>
         <?php endforeach; ?>
