@@ -1,4 +1,6 @@
 <?php
+require_once 'saludarTrait.php';
+require_once 'persona.php';
 require_once 'Alumno.php';
 
 $isEditing = false;
@@ -212,13 +214,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
                 <td><?= $alumno->getApellido() ?></td>
                 <td><?= $alumno->getNotaAcumulada() ?></td>
                 <td>
-                    <!-- Enlaces para Editar y Eliminar -->
+                    <!-- Enlaces para Editar, Eliminar y presentarse-->
                     <a href="index.php?action=edit&index=<?= $index ?>">
                         <img src="imgs/file-edit-line.png" alt="Editar" width="24px">
                     </a>
                     <a href="eliminar.php?index=<?= $index ?>">
                         <img src="imgs/delete-bin-line.png" alt="Eliminar" width="24px">
                     </a>
+                    <?= $alumno->calificar("te informo que he ",$alumno->getNotaAcumulada())?>
+                    <a href="#" class="enlace-formal" data-bs-toggle="modal" data-bs-target="#acercaDeModa2"><img src="imgs/mensaje.png" alt="presentarse" title="" /></a>
                 </td>
                 <!-- Más celdas... -->
             </tr>
@@ -240,6 +244,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
         <h3 class="">Profesor :  Victor Rodriguez</h3>
         <h3 class="">Practica final primer corte</h3>
         <h3 class="">Version : 0.1</h3>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Acerca Presentarse -->
+<div class="modal modal-xl fade" id="acercaDeModa2" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Acerca de</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <h3 class="">Presentarse</h3>
+        <h3 class=""></h3>
+
       </div>
       <div class="modal-footer justify-content-center">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
